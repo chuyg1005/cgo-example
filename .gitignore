@@ -2,3 +2,4 @@
 /libcalculator.so
 .idea
 /libjson_processor.dylib
+/vcpkg/
