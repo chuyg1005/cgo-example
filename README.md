@@ -38,6 +38,32 @@ cd cpp && make
 go run cpp_library_example.go
 ```
 
+To build and run the C++ JSON processor example with vcpkg:
+```bash
+# Install vcpkg if not already installed
+git clone https://github.com/Microsoft/vcpkg.git
+cd vcpkg
+./bootstrap-vcpkg.sh
+cd ..
+
+# Set VCPKG_ROOT environment variable
+export VCPKG_ROOT=/path/to/vcpkg
+
+# Build the C++ JSON processor library with vcpkg
+cd cpp_json_example
+mkdir -p build && cd build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
+cmake --build .
+cd ..
+
+# Copy the built library to the project root
+cp build/libjson_processor.* ..
+
+# Run the Go program that uses the C++ JSON processor library
+cd ..
+go run cpp_json_example_go.go
+```
+
 ## CGO Features Demonstrated
 
 ### C Examples:
@@ -48,14 +74,44 @@ go run cpp_library_example.go
 - Working with C arrays
 - Memory management with C.malloc and C.free
 
-### C++ Library Example:
+### C++ Library Examples:
 - Creating a C++ shared library
 - Using extern "C" for C-compatible function interfaces
 - Linking a C++ library with a Go program using CGO
 - Calling C++ library functions from Go
+- Using CMake with vcpkg for C++ project management
+- Integrating third-party libraries (nlohmann/json) via vcpkg
+- Proper memory management between C++ and Go
+- Error handling in both C++ and Go
 
 ## Requirements
 
 - Go 1.16 or later
 - A C/C++ compiler (usually GCC or Clang)
 - Make build tool
+- CMake 3.15 or later (for JSON example)
+- vcpkg package manager (for JSON example)
+
+## Why This Approach?
+
+1. **CGO Linking**: The JSON example requires proper CGO directives to link with the C++ library:
+   - `#cgo CXXFLAGS: -std=c++11` specifies the C++ standard
+   - `#cgo LDFLAGS: -L. -ljson_processor -Wl,-rpath,.` specifies:
+     - `-L.` to look for libraries in the current directory
+     - `-ljson_processor` to link with the json_processor library
+     - `-Wl,-rpath,.` to set the runtime library search path
+
+2. **vcpkg for Dependency Management**: We use vcpkg to manage the nlohmann/json dependency because:
+   - It provides a consistent way to manage C++ dependencies across platforms
+   - It handles the complexities of building and linking third-party libraries
+   - It integrates well with CMake build system
+
+3. **CMake Build System**: We use CMake because:
+   - It's a cross-platform build system that works well with vcpkg
+   - It provides good support for C++ projects with external dependencies
+   - It generates build files for various compilers and IDEs
+
+4. **Library Placement**: The built library is copied to the project root to:
+   - Make it easily discoverable by the Go linker
+   - Simplify the linking process in the CGO directives
+   - Avoid complex path specifications in the build process
