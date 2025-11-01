@@ -1,7 +1,8 @@
 package main
 
 /*
-#cgo LDFLAGS: -L./cpp -lcalculator
+#cgo CFLAGS: -I./cpp
+#cgo LDFLAGS: -L. -lcalculator
 #include "./cpp/calculator.h"
 #include <stdlib.h>
 */
