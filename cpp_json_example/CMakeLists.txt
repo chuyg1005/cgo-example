@@ -16,6 +16,8 @@ add_library(json_processor SHARED
 # Set library properties
 set_target_properties(json_processor PROPERTIES
     PUBLIC_HEADER include/json_processor.h
+    INSTALL_RPATH "@loader_path"
+    BUILD_WITH_INSTALL_RPATH TRUE
 )
 
 # Link with nlohmann_json

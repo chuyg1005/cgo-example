@@ -2,7 +2,7 @@ package main
 
 /*
 #cgo CXXFLAGS: -std=c++11
-#cgo LDFLAGS: -L. -ljson_processor -Wl,-rpath,.
+#cgo LDFLAGS: -L${SRCDIR}/cpp_json_example/build -ljson_processor -Wl,-rpath,${SRCDIR}/cpp_json_example/build
 #include "cpp_json_example/include/json_processor.h"
 #include <stdlib.h>
 */

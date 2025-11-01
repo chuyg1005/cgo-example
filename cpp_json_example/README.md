@@ -47,20 +47,17 @@ export VCPKG_ROOT=/path/to/vcpkg
    mkdir -p build && cd build
    cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
    cmake --build .
-   cd ..
-   ```
-3. Copy the built library to the project root:
-   ```bash
-   cp build/libjson_processor.* ..
-   cd ..
+   cd ../..
    ```
 
 ## Using the Library with Go
 
-After building the library, you can run the Go example:
+After building the library, you can run the Go example without copying the library:
 ```bash
 go run cpp_json_example_go.go
 ```
+
+The Go program uses CGO directives that automatically locate the library in its build directory.
 
 ## Features Demonstrated
 
@@ -83,7 +80,7 @@ go run cpp_json_example_go.go
    - It provides good support for C++ projects with external dependencies
    - It generates build files for various compilers and IDEs
 
-3. **Library Placement**: The built library is copied to the project root to:
-   - Make it easily discoverable by the Go linker
-   - Simplify the linking process in the CGO directives
-   - Avoid complex path specifications in the build process
+3. **No Library Copying Needed**: We've eliminated the need to copy the built library to the project root by:
+   - Using `${SRCDIR}` in the CGO directives to specify paths relative to the source file
+   - Setting the rpath during linking to ensure the library can be found at runtime
+   - Configuring the CMake build to set appropriate rpath values in the library itself

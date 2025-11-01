@@ -54,13 +54,10 @@ cd cpp_json_example
 mkdir -p build && cd build
 cmake .. -DCMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake
 cmake --build .
-cd ..
-
-# Copy the built library to the project root
-cp build/libjson_processor.* ..
+cd ../..
 
 # Run the Go program that uses the C++ JSON processor library
-cd ..
+# No need to copy the library - it's found automatically through CGO directives
 go run cpp_json_example_go.go
 ```
 
@@ -94,12 +91,13 @@ go run cpp_json_example_go.go
 
 ## Why This Approach?
 
-1. **CGO Linking**: The JSON example requires proper CGO directives to link with the C++ library:
+1. **CGO Linking**: The JSON example uses specific CGO directives to link with the C++ library:
    - `#cgo CXXFLAGS: -std=c++11` specifies the C++ standard
-   - `#cgo LDFLAGS: -L. -ljson_processor -Wl,-rpath,.` specifies:
-     - `-L.` to look for libraries in the current directory
+   - `#cgo LDFLAGS: -L${SRCDIR}/cpp_json_example/build -ljson_processor -Wl,-rpath,${SRCDIR}/cpp_json_example/build` specifies:
+     - `-L${SRCDIR}/cpp_json_example/build` to look for libraries in the build directory
      - `-ljson_processor` to link with the json_processor library
-     - `-Wl,-rpath,.` to set the runtime library search path
+     - `-Wl,-rpath,${SRCDIR}/cpp_json_example/build` to set the runtime library search path
+   - Using `${SRCDIR}` ensures the paths are relative to the source file location
 
 2. **vcpkg for Dependency Management**: We use vcpkg to manage the nlohmann/json dependency because:
    - It provides a consistent way to manage C++ dependencies across platforms
@@ -111,7 +109,7 @@ go run cpp_json_example_go.go
    - It provides good support for C++ projects with external dependencies
    - It generates build files for various compilers and IDEs
 
-4. **Library Placement**: The built library is copied to the project root to:
-   - Make it easily discoverable by the Go linker
-   - Simplify the linking process in the CGO directives
-   - Avoid complex path specifications in the build process
+4. **No Library Copying Needed**: We've eliminated the need to copy the built library to the project root by:
+   - Using `${SRCDIR}` in the CGO directives to specify paths relative to the source file
+   - Setting the rpath during linking to ensure the library can be found at runtime
+   - Configuring the CMake build to set appropriate rpath values in the library itself
