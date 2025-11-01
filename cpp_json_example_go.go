@@ -1,7 +1,8 @@
 package main
 
 /*
-#cgo LDFLAGS: -L. -ljson_processor
+#cgo CXXFLAGS: -std=c++11
+#cgo LDFLAGS: -L. -ljson_processor -Wl,-rpath,.
 #include "cpp_json_example/include/json_processor.h"
 #include <stdlib.h>
 */
@@ -30,7 +31,7 @@ func main() {
 	cResult := C.process_json(cJsonInput)
 	if cResult != nil {
 		defer C.free_json_result(cResult)
-		
+
 		// Convert C string back to Go string
 		goResult := C.GoString(cResult)
 		fmt.Println("Processed JSON:")
@@ -53,7 +54,7 @@ func main() {
 	cErrorResult := C.process_json(cInvalidJson)
 	if cErrorResult != nil {
 		defer C.free_json_result(cErrorResult)
-		
+
 		goErrorResult := C.GoString(cErrorResult)
 		fmt.Println("\nError handling:")
 		fmt.Println(goErrorResult)

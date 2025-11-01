@@ -1,3 +1,4 @@
 /cpp_json_example/build/
 /libcalculator.so
 .idea
+/libjson_processor.dylib
