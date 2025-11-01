@@ -1,0 +1,1 @@
+{"name": "json-processor", "version-string": "1.0.0", "dependencies": ["nlohmann-json"]}

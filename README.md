@@ -11,6 +11,11 @@ This project contains examples of using CGO to call C/C++ code from Go.
    - `Makefile` - Build script for the C++ library
 4. `cpp_library_example.go` - Example showing how to call the C++ library from Go
 5. `test_calculator.go` - Test file for the C++ calculator library
+6. `cpp_json_example/` - Directory containing a more complex C++ example with CMake and vcpkg:
+   - Uses nlohmann/json third-party library
+   - Built with CMake and vcpkg package management
+   - See `cpp_json_example/README.md` for details
+7. `cpp_json_example_go.go` - Go file that calls the C++ JSON processor library
 
 ## Running the Examples
 
